@@ -1,3 +1,4 @@
+# Node & Build artifacts
 node_modules/
 build/
 dist/
@@ -6,3 +7,15 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Python & Streamlit
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+.streamlit/secrets.toml

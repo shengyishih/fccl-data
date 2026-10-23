@@ -28,8 +28,10 @@ import {
   Building2,
   Calendar,
   Layers3,
-  ArrowRight
+  ArrowRight,
+  Rocket
 } from 'lucide-react';
+import { StreamlitDeployModal } from './components/StreamlitDeployModal';
 
 export default function App() {
   const [batches, setBatches] = useState<FCCLBatchRecord[]>([]);
@@ -38,6 +40,9 @@ export default function App() {
 
   // Active View Tab
   const [activeTab, setActiveTab] = useState<'profiler' | 'heatmap' | 'spc' | 'correlation' | 'simulator' | 'guide' | 'table'>('profiler');
+
+  // Streamlit Deployment Guide Modal
+  const [isDeployModalOpen, setIsDeployModalOpen] = useState<boolean>(false);
 
   // Currently Selected Batch
   const [selectedBatchIndex, setSelectedBatchIndex] = useState<number>(0);
@@ -156,37 +161,49 @@ export default function App() {
             </div>
           </div>
 
-          {/* Quick Batch Selector in Nav */}
-          <div className="flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-lg p-1">
-            <button
-              onClick={handlePrevBatch}
-              title="上一批次"
-              className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-
-            <div className="px-2 flex items-center gap-2">
-              <span className="text-xs text-slate-400 font-mono">批次:</span>
-              <select
-                value={selectedBatchIndex}
-                onChange={(e) => setSelectedBatchIndex(parseInt(e.target.value))}
-                className="bg-transparent text-xs font-bold font-mono text-sky-400 focus:outline-none cursor-pointer max-w-[210px]"
+          <div className="flex items-center gap-3">
+            {/* Quick Batch Selector in Nav */}
+            <div className="flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-lg p-1">
+              <button
+                onClick={handlePrevBatch}
+                title="上一批次"
+                className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
               >
-                {batches.map((b, i) => (
-                  <option key={b.Batch_ID} value={i} className="bg-slate-900 text-white">
-                    {b.Batch_ID} ({b.Product_Model} - {b.QC_Result})
-                  </option>
-                ))}
-              </select>
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              <div className="px-2 flex items-center gap-2">
+                <span className="text-xs text-slate-400 font-mono">批次:</span>
+                <select
+                  value={selectedBatchIndex}
+                  onChange={(e) => setSelectedBatchIndex(parseInt(e.target.value))}
+                  className="bg-transparent text-xs font-bold font-mono text-sky-400 focus:outline-none cursor-pointer max-w-[210px]"
+                >
+                  {batches.map((b, i) => (
+                    <option key={b.Batch_ID} value={i} className="bg-slate-900 text-white">
+                      {b.Batch_ID} ({b.Product_Model} - {b.QC_Result})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                onClick={handleNextBatch}
+                title="下一批次"
+                className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
 
+            {/* Streamlit Deploy Button */}
             <button
-              onClick={handleNextBatch}
-              title="下一批次"
-              className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              onClick={() => setIsDeployModalOpen(true)}
+              className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white text-xs font-bold transition-all shadow-md shadow-red-950/40 flex items-center gap-1.5 cursor-pointer shrink-0"
+              title="查看 GitHub 上傳與 Streamlit 發佈指南"
             >
-              <ChevronRight className="w-4 h-4" />
+              <Rocket className="w-3.5 h-3.5" />
+              發佈至 Streamlit
             </button>
           </div>
         </div>
@@ -526,6 +543,12 @@ export default function App() {
           <span>規範標準: IPC-TM-650 2.2.18 / 2.2.4 · 檢測精度 0.001 µm</span>
         </div>
       </footer>
+
+      {/* Streamlit & GitHub Deployment Modal */}
+      <StreamlitDeployModal
+        isOpen={isDeployModalOpen}
+        onClose={() => setIsDeployModalOpen(false)}
+      />
     </div>
   );
 }
